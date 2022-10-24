@@ -1,141 +1,169 @@
-#include<stdio.h>
-#include<stdlib.h>
-#include<limits.h>
 
-struct knap
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+#include <limits.h>
+struct knapsack
 {
-float x[10]; //solution vectors
-float profit; //total profit
+    float X[10];
+    float profit;
 };
-
-void merge(float *A1,float *A2,float *A3,int *A4,int *p,int *q,int *r){
-    int n1=*q-*p+1;
-    int i,j,k;
-    int n2=*r-*q;
-    float left1[n1+2],left2[n1+2],left3[n1+2],left4[n1+2];
-    float right1[n2+2],right2[n2+2],right3[n2+2],right4[n2+2];
-    for(int i=1;i<=n1;i++){
-        left1[i]=A1[*p + i - 1];
-        left2[i]=A2[*p + i - 1];
-        left3[i]=A3[*p + i - 1];
-        left4[i]=A4[*p + i - 1];
+void mergesort(float *A, float *B, float *C, int *D, int *p, int *q, int *r)
+{
+    int n1, n2, i, j, k;
+    n1 = *q - *p + 1;
+    n2 = *r - *q;
+    float Left1[n1 + 2], Left2[n1 + 2], Left3[n1 + 2], Left4[n1 + 2], R1[n2 + 2], R2[n2 + 2];
+    int R3[n2 + 2], R4[n2 + 2];
+    for (i = 1; i <= n1; i++)
+    {
+        Left1[i] = A[*p + i - 1];
+        Left2[i] = B[*p + i - 1];
+        Left3[i] = C[*p + i - 1];
+        Left4[i] = D[*p + i - 1];
     }
-    for(int j=1;j<=n2;j++){
-        right1[j]=A1[*q+j];
-        right2[j]=A2[*q+j];
-        right3[j]=A3[*q+j];
-        right4[j]=A4[*q+j];
+    for (j = 1; j <= n2; j++)
+    {
+        R1[j] = A[*q + j];
+        R2[j] = B[*q + j];
+        R3[j] = C[*q + j];
+        R4[j] = D[*q + j];
     }
-    left1[n1+1]=INT_MIN;
-    right1[n2+1]=INT_MIN;
-    i=1;
-    j=1;
-    for(k=*p;k<=*r;k++){
-        if(left1[i]>=right1[j]){
-            A1[k]=left1[i];
-            A2[k]=left2[i];
-            A3[k]=left3[i];
-            A4[k]=left4[i];
-            i=i+1;
+    Left1[n1 + 1] = INT_MIN;
+    R1[n2 + 1] = INT_MIN;
+    i = 1;
+    j = 1;
+    for (k = *p; k <= *r; k++)
+    {
+        if (Left1[i] >= R1[j]) // changes here < by >
+        {
+            A[k] = Left1[i];
+            B[k] = Left2[i];
+            C[k] = Left3[i];
+            D[k] = Left4[i];
+            i = i + 1;
         }
-        else{
-            A1[k]=right1[j];
-            A2[k]=right2[j];
-            A3[k]=right3[j];
-            A4[k]=right4[j];
-            j=j+1;
+        else
+        {
+            A[k] = R1[j];
+            B[k] = R2[j];
+            C[k] = R3[j];
+            D[k] = R4[j];
+            j = j + 1;
         }
     }
 }
 
-void mergesort(float *A1,float *A2,float *A3,int *A4,int *p,int *r){
-    if(*p < *r){
-        int q=((*p+*r)/2);
-        int s=q+1;
-        mergesort(A1,A2,A3,A4,p,&q);
-        mergesort(A1,A2,A3,A4,&s,r);
-        merge(A1,A2,A3,A4,p,&q,r);
+void mergesorting(float *A, float *B, float *C, int *D, int *p, int *r)
+{
+    if (*p < *r)
+    {
+        int q, g;
+        q = ((*p + *r) / 2);
+        g = q + 1;
+        mergesorting(A, B, C, D, p, &q);
+        mergesorting(A, B, C, D, &g, r);
+        mergesort(A, B, C, D, p, &q, r);
     }
     return;
 }
-struct knap *k;
-struct knap *knapsack(int n,float *w,float *c,float *W){
-    
-    k=(struct knap *)malloc(sizeof(struct knap));
-    int i,a[n],l,r;
-    float x[n],v[n+1];
-    for (i = 1; i <= n; i++)
+
+struct node *knapsack(int *num, float *w, float *c, float *W)
+{
+    struct knapsack *knap;
+    knap = (struct knapsack *)malloc(sizeof(struct knapsack));
+    struct knapsack *ptr;
+    ptr = (struct knapsack *)malloc(sizeof(struct knapsack));
+    int i, a[*num], j, l, r;
+    float X[*num], v[*num + 1], profit,t;
+    for (i = 1; i <= *num; i++)
     {
-        k->x[i] = 0;
+        printf("a[%d] cost = %.2f\n", i, c[i]);
+        printf("a[%d] weight  = %.2f\n", i, w[i]);
+    }
+    for (i = 1; i <= *num; i++)
+    {
+        knap->X[i] = 0;
         v[i] = c[i] / w[i];
     }
-    printf("SORTED VALUE:\n");
-    for(int i=1;i<=n;i++){
-        printf("v{%d}=%.2f\n",i,v[i]);         
-    }
-    printf("\nSORTED WEIGHT:\n");
-    for(int i=1;i<=n;i++){
-        printf("w{%d}=%.2f\n",i,w[i]);         
-    }
-    printf("\nSORTED COST:\n");
-    for(int i=1;i<=n;i++){
-        printf("c{%d}=%.2f\n",i,c[i]);         
-    }
-    for(i=1;i<=n;i++){
-        a[i]=i;  
-    }
-    l=1;
-    r=n;
-    mergesort(v,w,c,a,&l,&r);
-    i=1;
-    while ((*W!= 0) && (i<=n))
+    for (i = 1; i <= *num; i++)
     {
-            if (*W >= w[i])
-            {
-                k->x[i] = 1;
-                *W = *W - k->x[i] * w[i];
-            }
-            else
-            {
-                k->x[i] = *W / w[i];
-                *W = *W - k->x[i] * w[i];
-            }
-            i=i+1;
+        printf("value cost of a[%d] =  %.2f\n", i, v[i]);
     }
-    return k;
+    for (i = 1; i <= *num; i++)
+    {
+        a[i] = i;
+    }
+    l = 1;
+    r = *num;
+    mergesorting(v, w, c, a, &l, &r);
+    printf("----->  Sorted Cost --->\n");
+    for (j = 1; j <= *num; j++)
+    {
+        printf("%.2f\n", c[j]);
+    }
+    printf("------> Sorted Weight---->\n");
+    for (j = 1; j <= *num; j++)
+    {
+        printf("%.2f\n", w[j]);
+    }
+    printf("After Sorting Value cost :-\n");
+    for (j = 1; j <= *num; j++)
+    {
+        printf("%.2f\n", v[j]);
+    }
+    i = 1;
+    while ((*W != 0) && (i <= *num))
+    {
+        if (*W >= w[i])
+        {
+            knap->X[i] = 1;
+            *W = *W - knap->X[i] * w[i];
+        }
+        else
+        {
+            knap->X[i] = *W / w[i];
+            *W = *W - knap->X[i] * w[i];
+        }
+        i = i + 1;
+    }
+    printf("Weight Taken Are Shown in Arranged Value Cost\n");
+    for (i = 1; i <= *num; i++)
+    {
+        printf("X{%d} = %.2f\n", a[i], knap->X[i]);
+    }
+    t = 0;
+    printf("Profit Are ---->\n");
+    {
+        for (i = 1; i <= *num; i++)
+        {
+            t += c[i] * knap->X[i];
+            ptr->profit = t;
+        }
+    }
+    printf("%f\n",ptr->profit);
 }
 
 int main()
 {
-struct knap *ptr;
-float w[20], c[20], W; //w[i], and c[i] are weights, and cost, W is the knapsack capacity
-int n; //n is the number of objects
-printf("Enter the Number of Objects:");
-scanf("%d", &n);
-for (int i = 1; i<=n; i++)
-{
-printf("Enter the Weight of the object O[%d]", i);
-printf("w[%d]=",i);
-scanf("%f", &w[i]);
-}
-for (int i = 1; i<=n; i++)
-{
-printf("Enter the Cost of the object O[%d]", i);
-printf("c[%d]=",i);
-scanf("%f", &c[i]);
-}
-printf("Enter the capacity of knapsack: ");
-scanf("%f", &W);
-ptr=knapsack(n, w, c, &W);
-printf("\nThe solution vector is:\n");
-    for(int j=1;j<=n;j++){
-    printf("x{%d}=%.2f\n", j, ptr->x[j]);
+    float w[20], c[20], W;
+    int num, i;
+    printf("Enter Number of Object\n");
+    scanf("%d", &num);
+    for (i = 1; i <= num; i++)
+    {
+        printf("Enter weight of the object O[%d]\n", i);
+        printf("w[%d] = ", i);
+        scanf("%f", &w[i]);
     }
-    ptr->profit=0;
-    printf("\nMaximum profit:\n");
-    for(int j=1;j<=n;j++){
-    ptr->profit=(c[j])*(ptr->x[j])+ptr->profit;
+    for (i = 1; i <= num; i++)
+    {
+        printf("Enter cost of the object O[%d]\n", i);
+        printf("c[%d] = ", i);
+        scanf("%f", &c[i]);
     }
-    printf("%.2f",ptr->profit);
-return 0;
+    printf("Enter the capacity of the knapsack: ");
+    scanf("%f", &W);
+    knapsack(&num, w, c, &W);
+    return 0;
 }
