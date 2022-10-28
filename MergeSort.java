@@ -1,86 +1,68 @@
-import java.util.*;
-public class MergeSort {
-        //method to print the elements of the array
-        static void mergedArray(int arr[])
-        {
-            StringBuffer sb=new StringBuffer("");
-            int n = arr.length;
-            for (int i=0; i<n; ++i)
-                sb.append(arr[i]+" ");
-            System.out.println(sb.toString());
-        }
-        public static void main(String args[])
-        {
-            Scanner sc = new Scanner(System.in);
-            System.out.print("Enter the number of elements: ");
+import java.lang.*;
 
-         //checking all ans for various testcases
-            int ans = sc.nextInt();
-            while(ans>0)
-            {
+class Algo{
 
-                int n = sc.nextInt();
-
-                MergeSort ms = new MergeSort();
-                //array created for storing elements
-
-                int arr[] = new int[n];
-
-                //adding elements to the array
-                for(int i=0;i<n;i++)
-                    arr[i] = sc.nextInt();
-
-                Merge me = new Merge();
-
-                //calling the method mergeSort
-                me.mergeSort(arr,0,arr.length-1);
-
-                //calling the method printArray
-                ms.mergedArray(arr);
-                ans--;
-            }
-        }
-    }
-
-
-
-// } Driver Code Ends
-    class Merge
+    public void mergeSort(int arr[], int start, int end)
     {
-        void merge(int arr[], int left, int mid, int right)
-        {
-
-            int[] merged = new int[right-left+1];
-            int ind1=left;
-            int ind2=mid+1;
-            int x=0;
-            while(ind1<=mid&&ind2<=right){
-                if(arr[ind1]<arr[ind2]){
-                    merged[x++] = arr[ind1++] ;
-                }else{
-                    merged[x++]  =arr[ind2++] ;
-                }
-            }
-            while(ind1<=mid){
-                merged[x++]= arr[ind1++] ;
-            }
-            while(ind2<=right){
-                merged[x++] =arr[ind2++] ;
-            }
-            for(int i=0,j=left;i<merged.length;i++,j++){
-                arr[j] = merged[i];
-            }
-        }
-        void mergeSort(int arr[], int l, int r)
-        {
-            // return merged arr;
-            if(l>=r){
-                return ;
-            }
-            int mid = l+(r-l)/2;
-            mergeSort(arr,l,mid);
-            mergeSort(arr,mid+1,r);
-            merge(arr,l,mid,r);
-        }
+        if(end <= start)
+            return;
+        
+        int mid = (start + (end-start)/2);
+        mergeSort(arr, start, mid);
+        mergeSort(arr, mid+1, end);
+        merge(arr, start, mid, end);
     }
 
+    public void merge(int arr[], int start, int mid, int end)
+    {
+        int[] mergedArray = new int[end-start+1];
+
+        int i = start;
+        int j = mid + 1;
+        int k = 0;
+
+        while(i<=mid && j<=end)
+        {
+            if(arr[i] < arr[j])
+                mergedArray[k++] = arr[i++];
+            else
+                mergedArray[k++] = arr[j++];
+        }
+
+        while(i<=mid)
+            mergedArray[k++] = arr[i++];
+        
+
+        while(j<=end)
+            mergedArray[k++] = arr[j++];
+
+        for(int p=0,q=start;p<mergedArray.length;p++,q++)
+        {
+            arr[q] = mergedArray[p];
+        }
+        
+    }
+}
+
+public class Merge_Sort{
+    public static void main(String args[])
+    {
+        int n[] = {9,8,7,6,5,4,3,2,1};
+
+        System.out.print("Unsorted Array: ");
+        for(int i=0;i<n.length;i++)
+        {
+            System.out.print(n[i]+" ");
+        }
+
+        Algo a = new Algo();
+
+        a.mergeSort(n, 0, n.length-1);
+
+        System.out.print("\nSorted Array: ");
+        for(int i=0;i<n.length;i++)
+        {
+            System.out.print(n[i]+" ");
+        }
+    }
+}
